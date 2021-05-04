@@ -1,4 +1,4 @@
-module heroonprem
+module github.com/osallou/heroonprem
 
 go 1.15
 
