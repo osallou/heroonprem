@@ -37,8 +37,8 @@ func NewHeroGlobalConfig(dir string) *HeroGlobalConfig {
 }
 
 type HeroJob struct {
-	Methods []METHOD `yaml:"methods"`  // List of methods rules should be applied, if empty match only for add
- 	Rules   []string `yaml:"rules"`
+	Methods []METHOD `yaml:"methods"` // List of methods rules should be applied, if empty match only for add
+	Rules   []string `yaml:"rules"`
 	Scripts []string `yaml:"scripts"`
 	Cpus    int64    `yaml:"cpus"`  // number of cpus
 	Mem     int64    `yaml:"mem"`   // In Gb
@@ -158,7 +158,7 @@ func getJobConfig(file string, user *HeroUser) (*HeroConfig, error) {
 	return &heroConfig, nil
 }
 
-func getScript(file string, experiment string, job HeroJob, user *HeroUser) (string, error) {
+func getScript(method METHOD, file string, experiment string, job HeroJob, user *HeroUser) (string, error) {
 	scripts, err := getScripts(file, experiment, job)
 	if err != nil {
 		return "", err
@@ -174,6 +174,7 @@ func getScript(file string, experiment string, job HeroJob, user *HeroUser) (str
 		Time:       job.Time,
 		Queue:      job.Queue,
 		BaseDir:    filepath.Dir(file),
+		Method:     method,
 	}
 	var data bytes.Buffer
 	tpl, err := template.New("experiment").Parse(scriptTemplate)
@@ -243,7 +244,7 @@ func CreateJob(file string, method METHOD, user *HeroUser, cfg *HeroGlobalConfig
 	experiment := ""
 	for name, exp := range jcfg.Hero {
 		methodOK := false
-		if (exp.Methods == nil || len(exp.Methods) == 0) {
+		if exp.Methods == nil || len(exp.Methods) == 0 {
 			if method != FILE_ADD {
 				log.Debug().Msgf("[expirement=%s][method=%s] skipping", name, method)
 				continue
@@ -275,7 +276,7 @@ func CreateJob(file string, method METHOD, user *HeroUser, cfg *HeroGlobalConfig
 	}
 	log.Debug().Msgf("[experiment=%s] %+v", experiment, job)
 
-	script, err := getScript(fullPath, experiment, job, user)
+	script, err := getScript(method, fullPath, experiment, job, user)
 	if err != nil {
 		return "", err
 	}
