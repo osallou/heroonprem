@@ -238,7 +238,8 @@ func CreateJob(file string, method METHOD, user *HeroUser, cfg *HeroGlobalConfig
 	}
 	jcfg, err := getJobConfig(fullPath, user)
 	if err != nil {
-		return "", err
+		log.Debug().Msgf("[file=%s] no .hero found, skipping", file)
+		return "", nil
 	}
 	var job HeroJob
 	experiment := ""
