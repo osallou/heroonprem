@@ -163,6 +163,7 @@ func getScript(method METHOD, file string, experiment string, job HeroJob, user 
 	if err != nil {
 		return "", err
 	}
+
 	exp := HeroExperiment{
 		User:       user,
 		Experiment: experiment,
@@ -281,8 +282,7 @@ func CreateJob(file string, method METHOD, user *HeroUser, cfg *HeroGlobalConfig
 	if err != nil {
 		return "", err
 	}
-	//log.Debug().Msgf("[script] %s", script)
-	fmt.Println(script)
+	log.Debug().Msgf("[script] %s", script)
 	ts := time.Now().Unix()
 	scriptName := filepath.Join(cfg.ScriptDir, fmt.Sprintf("%s_%d.sh", experiment, ts))
 	ioutil.WriteFile(scriptName, []byte(script), 0755)
